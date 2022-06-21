@@ -73,4 +73,6 @@ changes are following
 <node pkg="natnet_ros_cpp" type="natnet_ros_cpp" name="vrpn_client_node" output="screen" >   
 ```
 
+## Citation
+If you use this software, please cite it from [CITATION.cff](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/CITATION.cff)
 

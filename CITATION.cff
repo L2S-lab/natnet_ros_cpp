@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: 'If you use this software, please cite it as below.'
+
+title: Seamless integration of Optitrack motion capture with ROS
+type: software
+license: GNU General Public License v3.0
+repository-code: https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc
+version: v1.0.0
+
+authors:
+  - given-names: Aarsh
+    family-names: THAKKER
+    email: aarsh.thakker@l2s.centralesupelec.fr
+conference:
+  name: "Conférence annuelle des développeurs et utilisateurs ROS (ROSCon Fr 2022), Toulouse, June 23, 2022"
+
+
