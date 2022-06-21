@@ -47,7 +47,7 @@ roslaunch natnet_ros_cpp natnet_ros.launch
 
 Here is an example of how your streaming settings should look.
 
-![alt text](https://github.com/L2S-lab/natnet_ros_cpp/tree/noeitc/img/streaming.png)
+![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/img/streaming.png)
 
 #### Understanding the launch file
 Launch file `natnet_ros.launch` contains the several configurable arguments. The details are mentioned in the launch file. Following are several important argument for the connection and the data transfer. Other connection arguments are for the advanced option.
