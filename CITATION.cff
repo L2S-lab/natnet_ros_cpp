@@ -4,7 +4,7 @@ message: 'If you use this software, please cite it as below.'
 title: Seamless integration of Optitrack motion capture with ROS
 type: software
 license: GNU General Public License v3.0
-repository-code: https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc
+repository-code: https://github.com/L2S-lab/natnet_ros_cpp/
 version: v1.0.0
 
 authors:
