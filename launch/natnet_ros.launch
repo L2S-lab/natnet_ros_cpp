@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- LOGGING -->
+  <arg name="log_internals" default="false"/>
+  <arg name="log_frames" default="false"/>
+  <arg name="log_latencies" default="false"/>
+
+  <!-- CONNECTION -->
+  <arg name="serverIP" default="192.168.0.100"/>
+  <arg name="clientIP" default="192.168.0.101"/>
+  <arg name="serverType" default="multicast"/>
+  <arg name="multicastAddress" default="239.255.42.99"/>
+  <arg name="serverCommandPort" default="1510"/>
+  <arg name="serverDataPort" default="1511"/>
+
+  <!-- PUBLISHING -->
+  <!-- To publish the frame of rigid body -->
+  <arg name="pub_rigid_body" default="true"/> 
+  <!-- To publish the individual (unlabeled) markers along with the (labeled) markers of the rigid bodies -->
+  <!-- keep pub_rigid_body to true to publish the markers of the rigidbody -->
+  <arg name="pub_rigid_body_marker" default="false"/>  
+  <!-- To publish markers as rigidbodies and track them, make the required changes in the config/initiate.yaml -->
+  <arg name="pub_individual_marker" default="false"/>
+  <!-- To publish all the unlabeled markers as point cloud -->
+  <arg name="pub_pointcloud" default="false"/>
+
+  <!-- CONFIG FILE -->
+  <arg name="conf_file" default="initiate.yaml"/>
+
+  <node pkg="natnet_ros_cpp" type="natnet_ros_cpp" name="natnet_ros" output="screen" >    
+    <!-- CONFIG-FILE -->
+    <rosparam file="$(find natnet_ros_cpp)/config/$(arg conf_file)"/>   
+  
+    <!-- LOGGING -->
+    <param name="log_internals" value="$(arg log_internals)" type="bool"/>
+    <param name="log_frames" value="$(arg log_frames)" type="bool"/>
+    <param name="log_latencies" value="$(arg log_latencies)" type="bool"/>
+
+    <!-- CONNECTION -->
+    <param name="serverIP" value="$(arg serverIP)" type="str"/>
+    <param name="clientIP" value="$(arg clientIP)" type="str"/>
+    <param name="serverType" value="$(arg serverType)" type="str"/>
+    <param name="multicastAddress" value="$(arg multicastAddress)" type="str"/>
+    <param name="serverCommandPort" value="$(arg serverCommandPort)" type="int"/>
+    <param name="serverDataPort" value="$(arg serverDataPort)" type="int"/>
+
+    <!-- PUBLISHING -->
+    <param name="pub_rigid_body" value="$(arg pub_rigid_body)" type="bool"/>
+    <param name="pub_rigid_body_marker" value="$(arg pub_rigid_body_marker)" type="bool"/>
+    <param name="pub_individual_marker" value="$(arg pub_individual_marker)" type="bool"/>
+    <param name="pub_pointcloud" value="$(arg pub_pointcloud)" type="bool"/>
+  </node>
+
+  
+</launch>

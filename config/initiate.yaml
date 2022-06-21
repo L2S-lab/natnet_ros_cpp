@@ -1,0 +1,51 @@
+# You can create copy of this file and load the required file on the rosparam server accordingly. Do not forget to modify the file name in the launch file.
+
+#Need to enable one of the tracking algorithm
+nearest_nbr: true
+# Yet to implement
+kalman: false
+
+#-------------#
+#Parameters for nearest neighbour filter
+individual_error: false
+# Tracking tolerance considered individually in x,y,z when 'Individual_error' is set to true
+# Ideally tolerance shoould be greater than the (max robot speed in m/s)/(frame rate of motion capture system in Hz) 
+# Current tolerance is set according to the 1m/s and 30FPS. But this should work in majority of the cases. Do not change until its necessary 
+# in meters
+E_x: 0.04
+E_y: 0.04
+E_z: 0.04
+# Tracking tolerance considered as norm of 3D vector when 'Individual_error' is set to false
+E: 0.04
+#-------------#
+
+# Add all the object names in this list to get the head count and the names of the objects
+object_names:
+  - crazyflie1
+  - crazyflie2
+
+# Initial position of the object must be within the tracking tolerance (in meters).
+# marker_config and orientation is not used as of now. 
+crazyflie1:
+  marker_config: 0 
+  pose: 
+    position:
+      - 0.0
+      - 0.0
+      - 0.048
+    orientation:
+      - 0.0
+      - 0.0
+      - 0.0
+
+crazyflie2:
+  marker_config: 0
+  pose: 
+    position:
+      - 0.0
+      - -1.75
+      - 0.042
+    orientation:
+      - 0.0
+      - 0.0
+      - 0.0

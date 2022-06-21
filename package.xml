@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>natnet_ros_cpp</name>
+  <version>0.0.0</version>
+  <description>The natnet_ros_cpp package</description>
+
+  <maintainer email="aarsh.thakker@centralesupelec.fr">Aarsh</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>GPLv3</license>
+
+
+  <!-- Use depend as a shortcut for packages that are both build and exec dependencies -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <build_depend>sensor_msgs</build_depend>
+  <build_export_depend>sensor_msgs</build_export_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <build_depend>tf2_ros</build_depend>
+  <build_export_depend>tf2_ros</build_export_depend>
+  <exec_depend>tf2_ros</exec_depend>
+
+  <build_depend>tf2</build_depend>
+  <build_export_depend>tf2</build_export_depend>
+  <exec_depend>tf2</exec_depend>
+
+</package>
