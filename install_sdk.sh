@@ -4,7 +4,7 @@ SDKFile="NatNetSDK.tar"
 
 # Check if sdk was already downloaded
 #if [  -d "deps/NatNetSDK" ] 
-if [ "$(ls -A deps/NatNetSDK)" ]; then
+if [[ -d "deps/NatNetSDK/lib" ]] && [[ -d "deps/NatNetSDK/include" ]]; then
         echo "SDK already installed."
         exit 1
 fi
