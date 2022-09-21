@@ -1,5 +1,6 @@
 # NatNet 4 ROS driver
 
+[![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp)
 
 
 ## Introduction
