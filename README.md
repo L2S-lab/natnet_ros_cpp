@@ -1,7 +1,10 @@
 # NatNet 4 ROS driver
 
+[![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp)
+
+
 ## Introduction
-This package contains a ROS driver for the NatNet protocol used by the OptiTrack motion capture system. It supports NatNet versions 4.0 (Motive 2.2 and higher). The NatNet SDK provided by the optitrack can be found [here](https://optitrack.com/support/downloads/developer-tools.html#natnet-sdk). It is already included in the package under `deps/`. NatNet protocol is used for streaming live motion capture data (rigid bodies, skeletons etc) across the shared network. 
+This package contains a ROS driver for the NatNet protocol used by the OptiTrack motion capture system. It supports NatNet versions 4.0 (Motive 2.2 and higher). The NatNet SDK provided by the optitrack can be found [here](https://optitrack.com/support/downloads/developer-tools.html#natnet-sdk). It will be downloaded under `deps/NatnetSDK` while building it for the first time. NatNet protocol is used for streaming live motion capture data (rigid bodies, skeletons etc) across the shared network. 
 
 This package is only tested with the Natnet 4.0 and ROS noetic but probably will work with the older versions of both as well. 
 
