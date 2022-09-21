@@ -9,7 +9,7 @@ on:
       - main
           
 jobs:
-  humble-devel-ci:
+  noetic-devel-ci:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -37,5 +37,5 @@ jobs:
         uses: ros-tooling/action-ros-ci@0.2.6
         with:
           package-name: natnet_ros_cpp
-          target-ros-distro: ${{ matrix.ros_distribution }}
+          target-ros1-distro: ${{ matrix.ros_distribution }}
           skip-tests: true
