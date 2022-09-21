@@ -1,2 +1,5 @@
 .vscode/
 build/
+deps/NatNetSDK/*
+!deps/NatNetSDK/.gitkeep
+
