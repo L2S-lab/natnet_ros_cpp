@@ -30,9 +30,14 @@ This package is only tested with the Natnet 4.0 and ROS noetic but probably will
 ## How to use it
 
 #### Building the package
+**requirements**
+```
+sudo apt install -y ros-$ROS_DISTRO-tf2* wget
+```
+Keep your system connected to the internet while building the package for the first time.
 ```
 cd ~/catkin_ws/src
-git clone https://github.com/aarsht7/natnet_ros_cpp
+git clone https://github.com/L2S-lab/natnet_ros_cpp
 cd ..
 catkin_build  #OR catkin_make
 . devel/setup.bash
