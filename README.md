@@ -1,6 +1,9 @@
 # NatNet 4 ROS driver
 
-[![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp)
+[![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp)  
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7773546.svg)](https://doi.org/10.5281/zenodo.7773546)
+
 
 
 ## Introduction
