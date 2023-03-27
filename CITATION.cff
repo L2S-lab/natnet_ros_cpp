@@ -1,12 +1,17 @@
-@software{thakker_aarsh_2022_7773546,
-  author       = {THAKKER Aarsh},
-  doi          = {10.5281/zenodo.7773546},
-  title        = {{Seamless integration of Optitrack motion capture with ROS 1}},
-  month        = {06},
-  year         = {2022},
-  publisher    = {Zenodo},
-  version      = {V1.1.0},
-  url          = {https://github.com/L2S-lab/natnet_ros_cpp}
-}
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
 
+title: Seamless integration of Optitrack motion capture with ROS
+type: software
+doi: https://doi.org/10.5281/zenodo.7773545
+conference: "Conférence annuelle des développeurs et utilisateurs ROS (ROSCon Fr 2022), Toulouse, June 23, 2022"
+license: GNU General Public License v3.0
+url: https://github.com/L2S-lab/natnet_ros_cpp
+date-released: 2022-06-23
+version: v1.1.0
 
+authors:
+  - given-names: Aarsh
+    family-names: THAKKER
+    email: aarsh.thakker@l2s.centralesupelec.fr
+    orcid: https://orcid.org/0000-0001-9638-5045
