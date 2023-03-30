@@ -2,13 +2,13 @@
 <launch>
 
   <!-- LOGGING -->
-  <arg name="log_internals" default="false"/>
-  <arg name="log_frames" default="false"/>
-  <arg name="log_latencies" default="false"/>
+  <arg name="log_internals" default="true"/>
+  <arg name="log_frames" default="true"/>
+  <arg name="log_latencies" default="true"/>
 
   <!-- CONNECTION -->
-  <arg name="serverIP" default="192.168.0.100"/>
-  <arg name="clientIP" default="192.168.0.103"/>
+  <arg name="serverIP" default="192.168.68.72"/>
+  <arg name="clientIP" default="192.168.68.60"/>
   <arg name="serverType" default="multicast"/>
   <arg name="multicastAddress" default="239.255.42.99"/>
   <arg name="serverCommandPort" default="1510"/>
@@ -21,9 +21,9 @@
   <!-- keep pub_rigid_body to true to publish the markers of the rigidbody -->
   <arg name="pub_rigid_body_marker" default="false"/>  
   <!-- To publish markers as rigidbodies and track them, make the required changes in the config/initiate.yaml -->
-  <arg name="pub_individual_marker" default="false"/>
+  <arg name="pub_individual_marker" default="true"/>
   <!-- To publish all the unlabeled markers as point cloud -->
-  <arg name="pub_pointcloud" default="false"/>
+  <arg name="pub_pointcloud" default="true"/>
 
   <!-- CONFIG FILE -->
   <arg name="conf_file" default="initiate.yaml"/>
