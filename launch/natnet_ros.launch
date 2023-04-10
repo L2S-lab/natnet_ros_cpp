@@ -21,7 +21,7 @@
   <!-- keep pub_rigid_body to true to publish the markers of the rigidbody -->
   <arg name="pub_rigid_body_marker" default="false"/>  
   <!-- To publish markers as rigidbodies and track them, make the required changes in the config/initiate.yaml -->
-  <arg name="pub_individual_marker" default="true"/>
+  <arg name="pub_individual_marker_after_tracking" default="false"/>
   <!-- To publish all the unlabeled markers as point cloud -->
   <arg name="pub_pointcloud" default="true"/>
 
@@ -48,7 +48,7 @@
     <!-- PUBLISHING -->
     <param name="pub_rigid_body" value="$(arg pub_rigid_body)" type="bool"/>
     <param name="pub_rigid_body_marker" value="$(arg pub_rigid_body_marker)" type="bool"/>
-    <param name="pub_individual_marker" value="$(arg pub_individual_marker)" type="bool"/>
+    <param name="pub_individual_marker_after_tracking" value="$(arg pub_individual_marker_after_tracking)" type="bool"/>
     <param name="pub_pointcloud" value="$(arg pub_pointcloud)" type="bool"/>
   </node>
 

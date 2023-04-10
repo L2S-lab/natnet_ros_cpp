@@ -68,10 +68,10 @@ public:
     void PubRigidbodyMarker(sMarker &data, Internal &internal);
 
     // Publish Single marker as the Rigidbody and TF
-    void PubMarkerPose(sMarker &data, Internal &internal);
+    void PubMarkerPoseWithTrack(sMarker &data, Internal &internal);
 
     // Publish Point cloud from the marker
-    void PubPointCloud(sMarker &data, Internal &internal);
+    void AppendToPointCloud(sMarker &data, Internal &internal);
 
 };
 
