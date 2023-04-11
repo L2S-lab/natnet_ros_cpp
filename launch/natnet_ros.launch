@@ -26,9 +26,13 @@
   <arg name="pub_pointcloud" default="true"/>
 
   <!-- CONFIG FILE -->
+  <!-- This is the base frame of the mocap system on which the tf, point clouds and poses will be published -->
+  <arg name="mocap_base_frame" default="opti_map"/> 
   <arg name="conf_file" default="initiate.yaml"/>
+  <!-- Use below line if gdb needs to be run remove escape \ before the args -->
+  <!-- <node pkg="natnet_ros_cpp" type="natnet_ros_cpp" name="natnet_ros" output="screen" launch-prefix="gdb -ex run \-\-args">    -->
 
-  <node pkg="natnet_ros_cpp" type="natnet_ros_cpp" name="natnet_ros" output="screen" >    
+  <node pkg="natnet_ros_cpp" type="natnet_ros_cpp" name="natnet_ros" output="screen">    
     <!-- CONFIG-FILE -->
     <rosparam file="$(find natnet_ros_cpp)/config/$(arg conf_file)"/>   
   
@@ -50,6 +54,7 @@
     <param name="pub_rigid_body_marker" value="$(arg pub_rigid_body_marker)" type="bool"/>
     <param name="pub_individual_marker_after_tracking" value="$(arg pub_individual_marker_after_tracking)" type="bool"/>
     <param name="pub_pointcloud" value="$(arg pub_pointcloud)" type="bool"/>
+    <param name="mocap_base_frame" value="$(arg mocap_base_frame)" type="str"/>
   </node>
 
   

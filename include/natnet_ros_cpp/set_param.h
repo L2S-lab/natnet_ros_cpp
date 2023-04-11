@@ -32,6 +32,7 @@ public:
     std::string clientIP;
     std::string serverType;
     std::string multicastAddress;
+    std::string mocap_base_frame;
     int serverCommandPort;
     int serverDataPort;
 
@@ -56,7 +57,9 @@ public:
         n.getParam("pub_rigid_body_marker", pub_rigid_body_marker);
         n.getParam("pub_individual_marker_after_tracking", pub_individual_marker_after_tracking);
         n.getParam("pub_pointcloud", pub_pointcloud);
-
+        n.getParam("mocap_base_frame", mocap_base_frame);
+        ROS_INFO("Mocap base frame : %s", mocap_base_frame.c_str());
+        
         if (n.getParam("serverIP", serverIP))
         {
             ROS_INFO("Got server IP : %s", serverIP.c_str());

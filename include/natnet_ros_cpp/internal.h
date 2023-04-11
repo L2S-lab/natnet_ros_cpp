@@ -36,7 +36,7 @@ public:
     std::map<std::string, ros::Publisher> DevicePub;
     ros::Publisher PointcloudPub;
     sensor_msgs::PointCloud msgPointcloud; // point cloud msg
-
+    ros::Time timeStampLatestFrame; // timestamp of the latest frame in local time (sec)
     int markerCount = 0; // number of individual markers (unlabled + labled)
     int UnlabeledCount = 0;
     sServerDescription g_serverDescription;
@@ -58,6 +58,9 @@ public:
     //Provides information on the latencies of the different systems
     void LatenciInfo(sFrameOfMocapData* data, void* pUserData, Internal &internal);
     
+    // Initialize the header of the ROS message 
+    void initROSmsgHeader(std_msgs::Header &msgHeader, Internal &internal);
+
     // Handles the data from the frame and publish it as ROS topics
     void DataHandler(sFrameOfMocapData* data, void* pUserData, Internal &internal);
 
