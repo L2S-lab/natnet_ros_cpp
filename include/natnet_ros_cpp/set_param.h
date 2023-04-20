@@ -26,12 +26,13 @@ public:
     bool log_latencies=false; // To log the latencies of the system
     bool pub_rigid_body = false; // To enable publishing the rigidbody as ros msg
     bool pub_rigid_body_marker = false; // To enable publishing individual markers of rigidbodies
-    bool pub_individual_marker = false; // To publish the position of individual markers
+    bool pub_individual_marker_after_tracking = false; // To publish the position of individual markers
     bool pub_pointcloud = false; // To publish all the marker as pointcloud
     std::string serverIP;
     std::string clientIP;
     std::string serverType;
     std::string multicastAddress;
+    std::string mocap_base_frame;
     int serverCommandPort;
     int serverDataPort;
 
@@ -54,9 +55,11 @@ public:
         n.getParam("log_latencies", log_latencies);
         n.getParam("pub_rigid_body", pub_rigid_body);
         n.getParam("pub_rigid_body_marker", pub_rigid_body_marker);
-        n.getParam("pub_individual_marker", pub_individual_marker);
+        n.getParam("pub_individual_marker_after_tracking", pub_individual_marker_after_tracking);
         n.getParam("pub_pointcloud", pub_pointcloud);
-
+        n.getParam("mocap_base_frame", mocap_base_frame);
+        ROS_INFO("Mocap base frame : %s", mocap_base_frame.c_str());
+        
         if (n.getParam("serverIP", serverIP))
         {
             ROS_INFO("Got server IP : %s", serverIP.c_str());
@@ -117,7 +120,7 @@ public:
             ROS_WARN("Failed to get server command port, using default 1511");
             serverDataPort = 1511;
         }
-        if (pub_individual_marker)
+        if (pub_individual_marker_after_tracking)
         {
             n.getParam("individual_error", individual_error);
             n.getParam("E", E);

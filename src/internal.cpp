@@ -1,4 +1,5 @@
 #include "internal.h"
+#include <string>
 
 void Internal::Init(ros::NodeHandle &n)
 {
@@ -92,16 +93,16 @@ void Internal::MessageHandler( Verbosity msgType, const char* msg )
 
 void Internal::Info(NatNetClient* g_pClient, ros::NodeHandle &n)
 {
-    ROS_INFO("[SampleClient] Requesting Data Descriptions...");
+    ROS_INFO("[NatNet ROS] Requesting Data Descriptions...");
     sDataDescriptions* pDataDefs = NULL;
     int iResult = g_pClient->GetDataDescriptionList(&pDataDefs);
     if (iResult != ErrorCode_OK || pDataDefs == NULL)
     {
-        ROS_INFO("[SampleClient] Unable to retrieve Data Descriptions.");
+        ROS_INFO("[NatNet ROS] Unable to retrieve Data Descriptions.");
     }
     else
     {
-        ROS_INFO("[SampleClient] Received %d Data/Devices Descriptions:", pDataDefs->nDataDescriptions );
+        ROS_INFO("[NatNet ROS] Received %d Data/Devices Descriptions:", pDataDefs->nDataDescriptions );
 
         for(int i=0; i < pDataDefs->nDataDescriptions; i++)
         {
@@ -109,17 +110,36 @@ void Internal::Info(NatNetClient* g_pClient, ros::NodeHandle &n)
             {
                 // RigidBody
                 sRigidBodyDescription* pRB = pDataDefs->arrDataDescriptions[i].Data.RigidBodyDescription;
-                ROS_INFO("RigidBody found : %s", pRB->szName);
+                
+                std::string body_name(pRB->szName);
+                bool replaced_strName = false;
+                // replace characters that are not a-z, A-Z, 0-9, / and _ with _
+                std::replace_if(body_name.begin(), body_name.end(), [&replaced_strName](char c) -> bool
+                {
+                    if (std::isalnum(c) || c=='/' || c=='_')
+                        return false;
+                    else   
+                    {
+                        replaced_strName = true;
+                        return true;
+                    }
+                }, '_');
+                if (replaced_strName)
+                    ROS_INFO("RigidBody found : %s replaced name with %s", pRB->szName, body_name.c_str());
+                else
+                    ROS_INFO("RigidBody found : %s", pRB->szName);
                 ROS_INFO_COND(rosparam.log_internals, "RigidBody ID : %d", pRB->ID);
                 ROS_INFO_COND(rosparam.log_internals, "RigidBody Parent ID : %d", pRB->parentID);
                 ROS_INFO_COND(rosparam.log_internals, "Parent Offset : %3.2f,%3.2f,%3.2f", pRB->offsetx, pRB->offsety, pRB->offsetz);
                 
                 // Creating publisher for the rigid bodies if found any
-                std::string body_name(pRB->szName);
+                
+
                 if(rosparam.pub_rigid_body)
                 {
                     this->ListRigidBodies[pRB->ID] = body_name;
-                    this->RigidbodyPub[pRB->szName] = n.advertise<geometry_msgs::PoseStamped>(body_name+"/pose", 50);
+                    //ROS_INFO("pub_rigid_body %s", body_name.c_str());
+                    this->RigidbodyPub[body_name] = n.advertise<geometry_msgs::PoseStamped>(body_name+"/pose", 50);
                 }
                 if ( pRB->MarkerPositions != NULL && pRB->MarkerRequiredLabels != NULL )
                 {
@@ -148,6 +168,18 @@ void Internal::Info(NatNetClient* g_pClient, ros::NodeHandle &n)
                 ROS_INFO_COND(rosparam.log_internals, "Camera Position (%3.2f, %3.2f, %3.2f)", pCamera->x, pCamera->y, pCamera->z);
                 ROS_INFO_COND(rosparam.log_internals, "Camera Orientation (%3.2f, %3.2f, %3.2f, %3.2f)", pCamera->qx, pCamera->qy, pCamera->qz, pCamera->qw);
             }
+            else if (pDataDefs->arrDataDescriptions[i].type == Descriptor_MarkerSet)
+            {
+                // Marker Set
+                sMarkerSetDescription* pMS = pDataDefs->arrDataDescriptions[i].Data.MarkerSetDescription;
+                std::string markerList;
+                for (int i = 0; i < pMS->nMarkers; i++)
+                {
+                    markerList.append(pMS->szMarkerNames[i]);
+                    markerList.append(" ");
+                }
+                ROS_INFO_COND(rosparam.log_internals, "MarkerSet: %s with %d markers: %s ", pMS->szName, pMS->nMarkers, markerList.c_str());
+            }
             else
             {
                 ROS_WARN_COND(rosparam.log_internals, "Unknown data type detected.");
@@ -158,10 +190,11 @@ void Internal::Info(NatNetClient* g_pClient, ros::NodeHandle &n)
         {
             this->PointcloudPub = n.advertise<sensor_msgs::PointCloud>("pointcloud",50);
         }
-        if (rosparam.pub_individual_marker)
+        if (rosparam.pub_individual_marker_after_tracking)
         {
             for (int i=0; i<(int) rosparam.object_list.size(); i++)
             {
+                ROS_INFO_COND(rosparam.log_internals, "pub_individual_marker_after_tracking %s", rosparam.object_list[i].name.c_str());
                 this->IndividualMarkerPub[rosparam.object_list[i].name] = n.advertise<geometry_msgs::PoseStamped>(rosparam.object_list[i].name+"/pose", 50);
             }
         }
@@ -199,8 +232,24 @@ void Internal::LatenciInfo(sFrameOfMocapData* data, void* pUserData, Internal &i
 void Internal::DataHandler(sFrameOfMocapData* data, void* pUserData, Internal &internal)
 {   
     int i=0;
-    ROS_INFO_COND(internal.rosparam.log_frames, "FrameID : %d", data->iFrame);
+    NatNetClient* pClient = (NatNetClient*) pUserData;
+    // Calculate the time difference between the mocap system and the ros system
+    const bool bSystemLatencyAvailable = data->CameraMidExposureTimestamp != 0;
+    if ( bSystemLatencyAvailable )
+    {
+        timeStampLatestFrame = ros::Time::now() - ros::Duration( pClient->SecondsSinceHostTimestamp( data->CameraMidExposureTimestamp ) );
+        //ROS_INFO_COND(internal.rosparam.log_latencies, "Local time: %f", ros::Time::now().toSec());
+        //ROS_INFO_COND(internal.rosparam.log_latencies, "timeStampLatestFrame: %f", timeStampLatestFrame.toSec());
+    }
+    else
+    {
+        // Transit latency is defined as the span of time between Motive transmitting the frame of data, and its reception by the client (now).
+        // The SecondsSinceHostTimestamp method relies on NatNetClient's internal clock synchronization with the server using Cristian's algorithm.
+        timeStampLatestFrame = ros::Time::now() - ros::Duration( pClient->SecondsSinceHostTimestamp( data->TransmitTimestamp ) );
+        //ROS_INFO_COND(internal.rosparam.log_latencies, "Approx timeStampLatestFrame: %f", timeStampLatestFrame.toSec());
+    }
 
+    ROS_INFO_COND(internal.rosparam.log_frames, "================FrameID================ : %d", data->iFrame);
     // Rigid Bodies
     ROS_INFO_COND(internal.rosparam.log_frames, "Rigid Bodies [Count=%d]", data->nRigidBodies);
     for(i=0; i < data->nRigidBodies; i++)
@@ -222,21 +271,26 @@ void Internal::DataHandler(sFrameOfMocapData* data, void* pUserData, Internal &i
         ROS_INFO_COND(internal.rosparam.log_frames, "Markers [Count=%i]", i);
         ROS_INFO_COND(internal.rosparam.log_frames, "x\ty\tz");
         ROS_INFO_COND(internal.rosparam.log_frames, "%3.2f\t%3.2f\t%3.2f", data->LabeledMarkers[i].x, data->LabeledMarkers[i].y, data->LabeledMarkers[i].z);
+        
         bool bUnlabeled = ((data->LabeledMarkers[i].params & 0x10) != 0);
-        if(internal.rosparam.pub_individual_marker && bUnlabeled)
+        if(bUnlabeled)
+        {
+            internal.UnlabeledCount++;
+        }
+        if(internal.rosparam.pub_individual_marker_after_tracking && bUnlabeled)
         {   
-            PubMarkerPose(data->LabeledMarkers[i], internal);
+            PubMarkerPoseWithTrack(data->LabeledMarkers[i], internal);
         }
         if (internal.rosparam.pub_pointcloud)
         {
-            PubPointCloud(data->LabeledMarkers[i], internal);
+            AppendToPointCloud(data->LabeledMarkers[i], internal);
         }
         if(internal.rosparam.pub_rigid_body_marker && !bUnlabeled)
         {
             PubRigidbodyMarker(data->LabeledMarkers[i], internal);
         }
     }
-    if (internal.rosparam.pub_individual_marker)
+    if (internal.rosparam.pub_individual_marker_after_tracking)
     {
         internal.rosparam.object_list_prev = internal.rosparam.object_list;
         if(internal.UnlabeledCount < (int)internal.rosparam.object_list.size() && internal.rosparam.error_amp==1.0)
@@ -244,18 +298,27 @@ void Internal::DataHandler(sFrameOfMocapData* data, void* pUserData, Internal &i
         else   
             internal.rosparam.error_amp = 1.0;
     }
+
     if(internal.rosparam.pub_pointcloud && internal.UnlabeledCount>0)
+    {
+        ROS_INFO_COND(internal.rosparam.log_internals, "Publishing Pointcloud with %lu points", internal.msgPointcloud.points.size());
         internal.PointcloudPub.publish(internal.msgPointcloud);
+        internal.msgPointcloud.points.clear();
+    }
     internal.UnlabeledCount = 0; 
+}
+
+void Internal::initROSmsgHeader(std_msgs::Header &msgHeader, Internal &internal)
+{
+    msgHeader.frame_id = internal.rosparam.mocap_base_frame;
+    msgHeader.stamp = timeStampLatestFrame;
 }
 
 void Internal::PubRigidbodyPose(sRigidBodyData &data, Internal &internal)
 {
     // Creating a msg to put data related to the rigid body and 
     geometry_msgs::PoseStamped msgRigidBodyPose;
-    msgRigidBodyPose.header.frame_id = "world";
-
-    msgRigidBodyPose.header.stamp = ros::Time::now();
+    initROSmsgHeader(msgRigidBodyPose.header, internal);
     msgRigidBodyPose.pose.position.x = data.x;
     msgRigidBodyPose.pose.position.y = data.y;
     msgRigidBodyPose.pose.position.z = data.z;
@@ -264,12 +327,10 @@ void Internal::PubRigidbodyPose(sRigidBodyData &data, Internal &internal)
     msgRigidBodyPose.pose.orientation.z = data.qz;
     msgRigidBodyPose.pose.orientation.w = data.qw;
     internal.RigidbodyPub[internal.ListRigidBodies[data.ID]].publish(msgRigidBodyPose);
-    
     // creating tf frame to visualize in the rviz
     static tf2_ros::TransformBroadcaster tfRigidBodies;
     geometry_msgs::TransformStamped msgTFRigidBodies;
-    msgTFRigidBodies.header.stamp = ros::Time::now();
-    msgTFRigidBodies.header.frame_id = "world";
+    initROSmsgHeader(msgTFRigidBodies.header, internal);
     msgTFRigidBodies.child_frame_id = internal.ListRigidBodies[data.ID];
     msgTFRigidBodies.transform.translation.x = data.x;
     msgTFRigidBodies.transform.translation.y = data.y;
@@ -282,20 +343,18 @@ void Internal::PubRigidbodyPose(sRigidBodyData &data, Internal &internal)
     
 }
 
-void Internal::PubMarkerPose(sMarker &data, Internal &internal)
+void Internal::PubMarkerPoseWithTrack(sMarker &data, Internal &internal)
 {   
     int update = nn_filter(internal.rosparam.object_list, data, internal.rosparam.E,  internal.rosparam.E_x, internal.rosparam.E_y, internal.rosparam.E_z, internal.rosparam.individual_error, internal.rosparam.error_amp);
     if (update>=0)
-    {   internal.UnlabeledCount+=1;
+    {   
         internal.rosparam.object_list[update].detected = true;
         internal.rosparam.object_list[update].x = data.x;
         internal.rosparam.object_list[update].y = data.y;
         internal.rosparam.object_list[update].z = data.z;
     
         geometry_msgs::PoseStamped msgMarkerPose;
-        msgMarkerPose.header.frame_id = "world";
-
-        msgMarkerPose.header.stamp = ros::Time::now();
+        initROSmsgHeader(msgMarkerPose.header, internal);
         msgMarkerPose.pose.position.x = data.x;
         msgMarkerPose.pose.position.y = data.y;
         msgMarkerPose.pose.position.z = data.z;
@@ -304,12 +363,10 @@ void Internal::PubMarkerPose(sMarker &data, Internal &internal)
         msgMarkerPose.pose.orientation.z = 0.0;
         msgMarkerPose.pose.orientation.w = 1.0;
         internal.IndividualMarkerPub[internal.rosparam.object_list[update].name].publish(msgMarkerPose);
-
         // creating tf frame to visualize in the rviz
         static tf2_ros::TransformBroadcaster tfMarker;
         geometry_msgs::TransformStamped msgTFMarker;
-        msgTFMarker.header.stamp = ros::Time::now();
-        msgTFMarker.header.frame_id = "world";
+        initROSmsgHeader(msgTFMarker.header, internal);
         msgTFMarker.child_frame_id = internal.rosparam.object_list[update].name;
         msgTFMarker.transform.translation.x = data.x;
         msgTFMarker.transform.translation.y = data.y;
@@ -322,11 +379,9 @@ void Internal::PubMarkerPose(sMarker &data, Internal &internal)
     }
 }
 
-void Internal::PubPointCloud(sMarker &data, Internal &internal)
+void Internal::AppendToPointCloud(sMarker &data, Internal &internal)
 {
-    internal.msgPointcloud.header.frame_id="world";
-    internal.msgPointcloud.header.stamp=ros::Time::now();
-    
+    initROSmsgHeader(internal.msgPointcloud.header, internal);
     geometry_msgs::Point32 msgPoint;
     msgPoint.x = data.x;
     msgPoint.y = data.y;

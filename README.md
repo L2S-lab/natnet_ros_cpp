@@ -55,6 +55,8 @@ roslaunch natnet_ros_cpp natnet_ros.launch
 - Under the OptiTrack Streaming Engine, turn on the Broadcast Frame.
 - Select the correct IP address in the Local Interface.
 - Select the Up Axis as Z.
+- Make sure the rigid body names do not have characters other than alphanumeric, _
+- Make sure that the Local interface of the optitrack streaming engine is given the exact eth/wifi interface that connects to the client computer. VRPN works irrespective of which interface was selected, but NatNet doesn't
 
 Here is an example of how your streaming settings should look.
 
@@ -69,7 +71,7 @@ Launch file `natnet_ros.launch` contains the several configurable arguments. The
 
 #### Publishing the single marker 
 It is possible to track the single marker as a rigid body with constant orientation. Go to the `config/initiate.yaml` It is suggested to make a copy of the file and rename the new file.
-The file contains the details on what to modify. 
+The file contains the details on what to modify. Basically, the approximate position of an individual marker has to be noted in this file and a basic filtering algorithm will track it over time. The filtering is not that robust and you can see it disappear often
 
 The question might arise on how to check the position of the single marker. For that, you can log the frames of the incoming data in the terminal. To do so, enable the `log_frames` in the launch file.
 
