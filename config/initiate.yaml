@@ -6,7 +6,7 @@ nearest_nbr: true
 kalman: false
 
 #-------------#
-#Parameters for nearest neighbour filter
+#Parameters for nearest neighbour filter, Best to use norm instead of individual error until you know what you what you are doing.
 individual_error: false
 # Tracking tolerance considered individually in x,y,z when 'Individual_error' is set to true
 # Ideally tolerance shoould be greater than the (max robot speed in m/s)/(frame rate of motion capture system in Hz) 
@@ -21,12 +21,13 @@ E: 0.04
 
 # Add all the object names in this list to get the head count and the names of the objects
 object_names:
-  - crazyflie1
-  - crazyflie2
+  - crazyflie_1
+#  - crazyflie_2
+#   - rmtt_1
 
 # Initial position of the object must be within the tracking tolerance (in meters).
 # marker_config and orientation is not used as of now. 
-crazyflie1:
+crazyflie_1:
   marker_config: 0 
   pose: 
     position:
@@ -38,14 +39,27 @@ crazyflie1:
       - 0.0
       - 0.0
 
-crazyflie2:
-  marker_config: 0
-  pose: 
-    position:
-      - 0.0
-      - -1.75
-      - 0.042
-    orientation:
-      - 0.0
-      - 0.0
-      - 0.0
+#crazyflie_2:
+#  marker_config: 0
+#  pose: 
+#    position:
+#      - 0.0
+#      - -1.75
+#      - 0.042
+#    orientation:
+#      - 0.0
+#      - 0.0
+#      - 0.0
+
+#rmtt_1:
+#  marker_config: 0
+#  pose:  
+#    position:
+#      - 0.0
+#      - 0.0
+#      - 0.094
+#    orientation:
+#      - 0.0
+#      - 0.0
+#      - 0.0
+

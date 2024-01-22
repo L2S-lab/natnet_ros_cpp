@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="mocap_node_name" default="natnet_ros_cpp"/>
+  
+  <node pkg="natnet_ros_cpp" type="helper_node.py" name="gui_natnet_ros" output="screen" >    
+    <param name="mocap_node_name" value="$(arg mocap_node_name)"/>
+  </node>
+
+  <node pkg="natnet_ros_cpp" type="marker_poses_server" name="marker_poses_server" output="screen">
+
+  </node>
+
+  
+</launch>

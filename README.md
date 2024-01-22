@@ -39,7 +39,7 @@ Keep your system connected to the internet while building the package for the fi
 cd ~/catkin_ws/src
 git clone https://github.com/L2S-lab/natnet_ros_cpp
 cd ..
-catkin_build  #OR catkin_make
+catkin build  #OR catkin_make
 . devel/setup.bash
 roslaunch natnet_ros_cpp natnet_ros.launch
 ```
