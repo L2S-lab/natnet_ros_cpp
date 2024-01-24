@@ -60,6 +60,9 @@ Here is an example of how your streaming settings should look.
 
 Using GUI tool
 Here, you can use simple tool and follow the instruction from the output area on the right bottom corner.
+```
+roslaunch natnet_ros_cpp gui_natnet_ros.launch
+```
 ![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/img/ui-1.png)
 
 
