@@ -31,9 +31,9 @@ public:
     std::map<std::string, ros::Publisher> RigidbodyPub;
     std::map<std::string, ros::Publisher> RigidbodyMarkerPub;
     std::map<std::string, ros::Publisher> IndividualMarkerPub;
-    std::map<std::string, ros::Publisher> SkeletonPub;
-    std::map<std::string, ros::Publisher> ForcePlatePub;
-    std::map<std::string, ros::Publisher> DevicePub;
+    std::map<std::string, ros::Publisher> SkeletonPub; // WIP : Need Help
+    std::map<std::string, ros::Publisher> ForcePlatePub; // WIP : Need Help
+    std::map<std::string, ros::Publisher> DevicePub; // WIP : Need Help
     ros::Publisher PointcloudPub;
     sensor_msgs::PointCloud msgPointcloud; // point cloud msg
 

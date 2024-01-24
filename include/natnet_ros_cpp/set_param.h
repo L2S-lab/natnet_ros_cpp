@@ -39,7 +39,7 @@ public:
     bool nearest_nbr = true;
     bool kalman = false; // Yet to implement
     bool individual_error = false;
-    float E=0.01*0.01, E_x=0.01, E_y=0.01, E_z=0.01;
+    float E=0.04, E_x=0.01, E_y=0.01, E_z=0.01;
     float error_amp = 1.0;
     
     std::vector<std::string> object_names;

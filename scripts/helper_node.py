@@ -19,6 +19,18 @@ from PyQt5 import QtWidgets, uic
 import sys
 
 from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
+
+class WorkerThread(QThread):
+    finished_signal = pyqtSignal(int)
+    def __init__(self, cmd) -> None:
+        super().__init__()
+        
+        self.cmd = cmd
+
+    def run(self):
+        result = subprocess.run(self.cmd,shell=True).returncode
+        self.finished_signal.emit(result)
 
 class PyQt5Widget(QtWidgets.QMainWindow):
   def __init__(self):
@@ -35,7 +47,7 @@ class PyQt5Widget(QtWidgets.QMainWindow):
     self.ros_dist = os.environ['ROS_DISTRO']
     self.pwd = os.environ['PWD']
     self.config_file = os.path.join(PKG_PATH, 'config','conf_autogen.yaml')
-    self.name = rospy.get_param("mocap_node_name",'natnet_ros_cpp')
+    self.name = rospy.get_param("~mocap_node_name")
     self.pub_params = {"pub_individual_marker":False,
                       "pub_rigid_body": False,
                       "pub_rigid_body_marker": False,
@@ -144,23 +156,24 @@ class PyQt5Widget(QtWidgets.QMainWindow):
     rospy.Rate(1).sleep()
     #export ROS_HOSTNAME={host}
     command='''
-    export ROS_MASTER_URI=http://{ros_ip}:11311
-    source /opt/ros/{dist}/setup.bash
-    source {pwd}/devel/setup.bash
+    export ROS_MASTER_URI=http://{ros_ip}:11311;
+    source /opt/ros/{dist}/setup.bash;
+    source {pwd}/devel/setup.bash;
     rosrun natnet_ros_cpp natnet_ros_cpp __name:={name}
     '''.format(ros_ip=self.ros_ip ,dist=self.ros_dist, pwd=self.pwd, name=self.name)
-
-    subprocess.Popen(command, shell=True, bufsize=0, 
-                    stdout=subprocess.PIPE, 
-                    universal_newlines=True, 
-                    executable='/bin/bash')
+    self.start_node_thread = WorkerThread(command)
+    self.start_node_thread.start()
+    #subprocess.Popen(command, shell=True, bufsize=0, 
+    #                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    #                universal_newlines=True, 
+    #                executable='/bin/bash')
 
   def stop(self):
     try:
       command='''
       export ROS_MASTER_URI=http://{ros_ip}:11311
       source /opt/ros/{dist}/setup.bash
-      rosnode kill natnet_ros_cpp
+      rosnode kill {name}
       '''.format(ros_ip=self.ros_ip, host=self.ros_ip ,dist=self.ros_dist, pwd=self.pwd, name=self.name)
       subprocess.check_call(command, shell=True, bufsize=0,  
                       universal_newlines=True, 
@@ -168,7 +181,7 @@ class PyQt5Widget(QtWidgets.QMainWindow):
       self.Log('info',' Killed natnet node' )
       self.Log('block')
     except subprocess.CalledProcessError as e:
-      self.Log('error','Error killing natnet node try excecuting \"rosnode kill natnet_ros_cpp\"')
+      self.Log('error','Error killing natnet node try excecuting \"rosnode kill natnet_ros\"')
       self.Log('block')
 #----------------------------------------------------------------------------------------
 # PUBLISHING RELATED STUFF
@@ -182,7 +195,8 @@ class PyQt5Widget(QtWidgets.QMainWindow):
       if self.pub_im.isChecked():
         self.pub_params["pub_individual_marker"] = True
         self.Log('block')
-        self.Log('info','Go to Single marker naming tab and press the refresh button to complete the configuration of for initial position of the markers (wait for a second or two after pressing the refresh)')
+        self.Log('info','Go to Single marker naming tab and press the refresh button to complete the configuration of for initial position of the markers (wait for a second or two after pressing the refresh).')
+        self.Log('info',' If you do not wish to name some marker, you can leave it empty. Do not repeat names of the markers.')
       else:
         self.pub_params["pub_individual_marker"] = False
     else:
@@ -250,10 +264,12 @@ class PyQt5Widget(QtWidgets.QMainWindow):
   def get_server_ip(self):
     self.conn_params["serverIP"] = self.textServerIP.text()
     self.Log('info','setting servet ip '+str(self.conn_params["serverIP"]))
+    #self.Log('info','setting server ip '+str(self.conn_params["serverIP"]).split('.')[0]+'***'+'***'+str(self.conn_params["serverIP"]).split('.')[-1])
 
   def get_client_ip(self):
     self.conn_params["clientIP"] = self.textClientIP.text()
     self.Log('info','setting client ip '+str(self.conn_params["clientIP"]))
+    #self.Log('info','setting client ip '+str(self.conn_params["clientIP"]).split('.')[0]+'***'+'***'+str(self.conn_params["clientIP"]).split('.')[-1])
 
   def get_server_type(self):
     if self.multicast_radio.isChecked():
@@ -327,17 +343,18 @@ class PyQt5Widget(QtWidgets.QMainWindow):
       self.z_position = z_position
 
   def yaml_dump(self):
-    
+    empty=0
     object_names={'object_names':[]}
-    objects = {}
     if self.num_of_markers!=0:
       for i in range(min(40,self.num_of_markers)):
-        object_names['object_names'].append(eval('self.name_'+str(i+1)+'.text()'))
-        objects[object_names['object_names'][i]]={'marker_config':0,
-                                                  'pose':
-                                                  {'position':[self.x_position[i],self.y_position[i],self.z_position[i]],
-                                                  'orientation':[]}}
-      self.natnet_params[self.name] = [object_names,objects]
+        if eval('self.name_'+str(i+1)+'.text()') == '': empty+=1
+        else:
+          object_names['object_names'].append(eval('self.name_'+str(i+1)+'.text()'))
+          object_names[object_names['object_names'][i-empty]]={'marker_config':0,
+                                                    'pose':
+                                                    {'position':[self.x_position[i],self.y_position[i],self.z_position[i]],
+                                                    'orientation':[]}}
+      self.natnet_params = object_names
       try:
         os.remove(os.path.join(self.config_file))
       except OSError:
@@ -443,7 +460,7 @@ class PyQt5Widget(QtWidgets.QMainWindow):
       self.log_params["log_frames"] = True
       self.Log('info','Enabled logging frames in terminal')
     else:
-      self.log_frames = False
+      self.log_params["log_frames"] = False
 
   def log_internal_setting(self):
     if self.log_internal.isChecked():
@@ -465,4 +482,6 @@ if __name__ == "__main__":
   app = QtWidgets.QApplication(sys.argv)
   window = PyQt5Widget()
   window.show()
+  if rospy.is_shutdown():
+    sys.exit(app.exec_())
   sys.exit(app.exec_())

@@ -83,7 +83,6 @@ bool GetMarkerPosesServer::update(natnet_ros_cpp::MarkerPoses::Request &req,
         ROS_INFO("Client initialized and ready.");
     }
 
-    auto _start = std::chrono::steady_clock::now();
     while (ros::ok())
     {
         ros::Time begin = ros::Time::now();
