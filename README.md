@@ -63,7 +63,7 @@ Here, you can use simple tool and follow the instruction from the output area on
 ```
 roslaunch natnet_ros_cpp gui_natnet_ros.launch
 ```
-![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/img/ui-1.png)
+![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/main/img/ui-1.png)
 
 
 #### Difficult way
