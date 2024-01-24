@@ -244,8 +244,13 @@ void Internal::DataHandler(sFrameOfMocapData* data, void* pUserData, Internal &i
         else   
             internal.rosparam.error_amp = 1.0;
     }
-    if(internal.rosparam.pub_pointcloud && internal.UnlabeledCount>0)
+    if(internal.rosparam.pub_pointcloud)
+    {
+        internal.msgPointcloud.header.frame_id= internal.rosparam.globalFrame;
+        internal.msgPointcloud.header.stamp=ros::Time::now();
         internal.PointcloudPub.publish(internal.msgPointcloud);
+    }
+    internal.msgPointcloud.points.clear() ;
     internal.UnlabeledCount = 0; 
 }
 
@@ -253,8 +258,7 @@ void Internal::PubRigidbodyPose(sRigidBodyData &data, Internal &internal)
 {
     // Creating a msg to put data related to the rigid body and 
     geometry_msgs::PoseStamped msgRigidBodyPose;
-    msgRigidBodyPose.header.frame_id = "world";
-
+    msgRigidBodyPose.header.frame_id = internal.rosparam.globalFrame;
     msgRigidBodyPose.header.stamp = ros::Time::now();
     msgRigidBodyPose.pose.position.x = data.x;
     msgRigidBodyPose.pose.position.y = data.y;
@@ -269,7 +273,7 @@ void Internal::PubRigidbodyPose(sRigidBodyData &data, Internal &internal)
     static tf2_ros::TransformBroadcaster tfRigidBodies;
     geometry_msgs::TransformStamped msgTFRigidBodies;
     msgTFRigidBodies.header.stamp = ros::Time::now();
-    msgTFRigidBodies.header.frame_id = "world";
+    msgTFRigidBodies.header.frame_id = internal.rosparam.globalFrame;
     msgTFRigidBodies.child_frame_id = internal.ListRigidBodies[data.ID];
     msgTFRigidBodies.transform.translation.x = data.x;
     msgTFRigidBodies.transform.translation.y = data.y;
@@ -293,7 +297,7 @@ void Internal::PubMarkerPose(sMarker &data, Internal &internal)
         internal.rosparam.object_list[update].z = data.z;
     
         geometry_msgs::PoseStamped msgMarkerPose;
-        msgMarkerPose.header.frame_id = "world";
+        msgMarkerPose.header.frame_id = internal.rosparam.globalFrame;
 
         msgMarkerPose.header.stamp = ros::Time::now();
         msgMarkerPose.pose.position.x = data.x;
@@ -309,7 +313,7 @@ void Internal::PubMarkerPose(sMarker &data, Internal &internal)
         static tf2_ros::TransformBroadcaster tfMarker;
         geometry_msgs::TransformStamped msgTFMarker;
         msgTFMarker.header.stamp = ros::Time::now();
-        msgTFMarker.header.frame_id = "world";
+        msgTFMarker.header.frame_id = internal.rosparam.globalFrame;
         msgTFMarker.child_frame_id = internal.rosparam.object_list[update].name;
         msgTFMarker.transform.translation.x = data.x;
         msgTFMarker.transform.translation.y = data.y;
@@ -324,9 +328,7 @@ void Internal::PubMarkerPose(sMarker &data, Internal &internal)
 
 void Internal::PubPointCloud(sMarker &data, Internal &internal)
 {
-    internal.msgPointcloud.header.frame_id="world";
-    internal.msgPointcloud.header.stamp=ros::Time::now();
-    
+
     geometry_msgs::Point32 msgPoint;
     msgPoint.x = data.x;
     msgPoint.y = data.y;

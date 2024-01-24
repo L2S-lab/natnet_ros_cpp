@@ -5,11 +5,13 @@ project(natnet_ros_cpp)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
+  rospy
   std_msgs
   visualization_msgs
   sensor_msgs
   tf2 
   tf2_ros
+  message_generation
 )
 find_package(Boost 1.65 REQUIRED COMPONENTS system thread)
 find_package(Eigen3 REQUIRED)
@@ -37,6 +39,15 @@ set(my_include_directories
   ${EIGEN3_INCLUDE_DIRS}
   ${NATNET_SDK_DIR}/include
 )
+set(QT_DEPEND
+    Qt5Widgets
+    Qt5PrintSupport
+    )
+set (QT_DEPEND_LIB
+    Qt5::Widgets
+    Qt5::Core
+    Qt5::PrintSupport
+    )
 ## Generate messages in the 'msg' folder
 # add_message_files(
 #   FILES
@@ -44,6 +55,15 @@ set(my_include_directories
 #   Message2.msg
 # )
 
+add_service_files(
+  FILES
+  MarkerPoses.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
@@ -53,7 +73,7 @@ set(my_include_directories
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES natnet_ros_cpp
-#  CATKIN_DEPENDS geometry_msgs roscpp std_msgs
+  CATKIN_DEPENDS geometry_msgs roscpp std_msgs message_runtime rospy std_msgs sensor_msgs
 #  DEPENDS system_lib
 )
 
@@ -77,6 +97,10 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME} src/natnet_ros.cpp src/internal.cpp src/nn_filter.cpp)
+
+add_executable(marker_poses_server src/marker_poses_server.cpp)
+target_link_libraries(marker_poses_server ${catkin_LIBRARIES} ${NATNET_LIBRARY_DIR})
+add_dependencies(marker_poses_server ${PROJECT_NAME})
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,3 +172,7 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_install_python(PROGRAMS scripts/helper_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

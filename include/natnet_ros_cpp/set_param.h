@@ -34,11 +34,12 @@ public:
     std::string multicastAddress;
     int serverCommandPort;
     int serverDataPort;
+    std::string globalFrame;
 
     bool nearest_nbr = true;
-    bool kalman = false;
+    bool kalman = false; // Yet to implement
     bool individual_error = false;
-    float E=0.01*0.01, E_x=0.01, E_y=0.01, E_z=0.01;
+    float E=0.04, E_x=0.01, E_y=0.01, E_z=0.01;
     float error_amp = 1.0;
     
     std::vector<std::string> object_names;
@@ -57,7 +58,7 @@ public:
         n.getParam("pub_individual_marker", pub_individual_marker);
         n.getParam("pub_pointcloud", pub_pointcloud);
 
-        if (n.getParam("serverIP", serverIP))
+        if (n.getParam("/conn_params/serverIP", serverIP))
         {
             ROS_INFO("Got server IP : %s", serverIP.c_str());
         }
@@ -67,7 +68,7 @@ public:
             serverIP = "192.168.0.100";
         }
 
-        if (n.getParam("clientIP", clientIP))
+        if (n.getParam("/conn_params/clientIP", clientIP))
         {
             ROS_INFO("Got client IP : %s", clientIP.c_str());
         }
@@ -77,7 +78,7 @@ public:
             clientIP = "192.168.0.101";
         }
 
-        if (n.getParam("serverType", serverType))
+        if (n.getParam("/conn_params/serverType", serverType))
         {
             ROS_INFO("Got server Type : %s", serverType.c_str());
         }
@@ -89,7 +90,7 @@ public:
 
         if (serverType == "multicast")
         {
-            if (n.getParam("multicastAddress", multicastAddress))
+            if (n.getParam("/conn_params/multicastAddress", multicastAddress))
                 ROS_INFO("Got server Type : %s", multicastAddress.c_str());
             else
             {
@@ -98,7 +99,7 @@ public:
             }
         }
 
-        if (n.getParam("serverCommandPort", serverCommandPort))
+        if (n.getParam("/conn_params/serverCommandPort", serverCommandPort))
         {
             ROS_INFO("Got server Command Port : %i", serverCommandPort);
         }
@@ -108,7 +109,7 @@ public:
             serverCommandPort = 1510;
         }
 
-        if (n.getParam("serverDataPort", serverDataPort))
+        if (n.getParam("/conn_params/serverDataPort", serverDataPort))
         {
             ROS_INFO("Got server Command Port : %i", serverDataPort);
         }
@@ -116,6 +117,15 @@ public:
         {
             ROS_WARN("Failed to get server command port, using default 1511");
             serverDataPort = 1511;
+        }
+        if (n.getParam("/conn_params/globalFrame", globalFrame))
+        {
+            ROS_INFO("Got global frame name : %s", globalFrame.c_str());
+        }
+        else
+        {
+            ROS_WARN("Failed to get global frame name. Using default name: world");
+            globalFrame = "world";
         }
         if (pub_individual_marker)
         {
@@ -149,6 +159,70 @@ public:
                 ROS_INFO("Got initial position of %s : [%f %f %f]",temp_obj.name.c_str(),temp_obj.x , temp_obj.y, temp_obj.z);
             }
             object_list_prev = object_list;
+        }
+    }
+
+    void getConnectionParams(ros::NodeHandle &n)
+    {
+        if (n.getParam("/conn_params/serverIP", serverIP))
+        {
+            ROS_INFO("Got server IP : %s", serverIP.c_str());
+        }
+        else
+        {
+            ROS_WARN("Failed to get server IP, using default 192.168.0.100");
+            serverIP = "192.168.0.100";
+        }
+
+        if (n.getParam("/conn_params/clientIP", clientIP))
+        {
+            ROS_INFO("Got client IP : %s", clientIP.c_str());
+        }
+        else
+        {
+            ROS_WARN("Failed to get client IP, using default 192.168.0.101");
+            clientIP = "192.168.0.101";
+        }
+
+        if (n.getParam("/conn_params/serverType", serverType))
+        {
+            ROS_INFO("Got server Type : %s", serverType.c_str());
+        }
+        else
+        {
+            ROS_WARN("Failed to get server type, using default multicast");
+            serverType = "multicast";
+        }
+
+        if (serverType == "multicast")
+        {
+            if (n.getParam("/conn_params/multicastAddress", multicastAddress))
+                ROS_INFO("Got server Type : %s", multicastAddress.c_str());
+            else
+            {
+                ROS_WARN("Failed to get server IP, using default multicast address 239.255.42.99");
+                multicastAddress = "239.255.42.99";
+            }
+        }
+
+        if (n.getParam("/conn_params/serverCommandPort", serverCommandPort))
+        {
+            ROS_INFO("Got server Command Port : %i", serverCommandPort);
+        }
+        else
+        {
+            ROS_WARN("Failed to get server command port, using default 1510");
+            serverCommandPort = 1510;
+        }
+
+        if (n.getParam("/conn_params/serverDataPort", serverDataPort))
+        {
+            ROS_INFO("Got server Command Port : %i", serverDataPort);
+        }
+        else
+        {
+            ROS_WARN("Failed to get server command port, using default 1511");
+            serverDataPort = 1511;
         }
     }
 
