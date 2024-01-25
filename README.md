@@ -25,7 +25,6 @@ This package is only tested with the Natnet 4.0 and ROS noetic but probably will
  - Considering compensation of time delay (~5-6ms) to the ROS time stamp.
  - Adding an option for the axis orientation (Z UP or Y UP)
  - Creating package for ROS2.
- - Implement CI-CD and Issue templete.
 
 ## How to use it
 
@@ -39,9 +38,8 @@ Keep your system connected to the internet while building the package for the fi
 cd ~/catkin_ws/src
 git clone https://github.com/L2S-lab/natnet_ros_cpp
 cd ..
-catkin_build  #OR catkin_make
+catkin build  #OR catkin_make
 . devel/setup.bash
-roslaunch natnet_ros_cpp natnet_ros.launch
 ```
 
 #### Setup the Motive for this package
@@ -57,14 +55,30 @@ Here is an example of how your streaming settings should look.
 
 ![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/img/streaming.png)
 
-#### Understanding the launch file
+
+#### Easy way
+
+Using GUI tool
+Here, you can use simple tool and follow the instruction from the output area on the right bottom corner.
+```
+roslaunch natnet_ros_cpp gui_natnet_ros.launch
+```
+![alt text](https://github.com/L2S-lab/natnet_ros_cpp/blob/main/img/ui-1.png)
+
+
+#### Difficult way
+
+Using Non gui approach
+`roslaunch natnet_ros_cpp natnet_ros.launch`
+
+- ##### Understanding the launch file
 Launch file `natnet_ros.launch` contains the several configurable arguments. The details are mentioned in the launch file. Following are several important argument for the connection and the data transfer. Other connection arguments are for the advanced option.
 
 - `serverIP` : The IP address of the host PC. (The one selected in the Local Interface in Motive app)
 - `clientIP` : The IP address of the PC on which the file will be launched
 - `serverType` : Two possible options, `multicast` and `unicast`
 
-#### Publishing the single marker 
+- ##### Publishing the single marker 
 It is possible to track the single marker as a rigid body with constant orientation. Go to the `config/initiate.yaml` It is suggested to make a copy of the file and rename the new file.
 The file contains the details on what to modify. 
 
@@ -72,7 +86,7 @@ The question might arise on how to check the position of the single marker. For 
 
 After configuring the `initiate.yaml`, in the launch file, enable the `pub_individual_marker`. Change the name of the config file in the argument `conf_file` if needed and launch the file.
 
-#### Replacing existing package
+- ##### Replacing existing package
 You can easily replace the current package with this package. In the `natnet_ros.launch` change the name of node to the node you currently using. For an example, 
 If you are using the `vrpn_client_node`
 changes are following
