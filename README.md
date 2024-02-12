@@ -1,7 +1,8 @@
 # NatNet 4 ROS driver
 
-[![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp)
+<!-- [![GitHub Action Status](https://github.com/L2S-lab/natnet_ros_cpp/actions/workflows/main.yaml/badge.svg?event=push)](https://github.com/L2S-lab/natnet_ros_cpp) -->
 
+if you are using software for any publication or article, we would be delighted if you could cite it [from here](https://hal.science/hal-04150950).
 
 ## Introduction
 This package contains a ROS driver for the NatNet protocol used by the OptiTrack motion capture system. It supports NatNet versions 4.0 (Motive 2.2 and higher). The NatNet SDK provided by the optitrack can be found [here](https://optitrack.com/support/downloads/developer-tools.html#natnet-sdk). It will be downloaded under `deps/NatnetSDK` while building it for the first time. NatNet protocol is used for streaming live motion capture data (rigid bodies, skeletons etc) across the shared network. 
@@ -71,14 +72,14 @@ roslaunch natnet_ros_cpp gui_natnet_ros.launch
 Using Non gui approach
 `roslaunch natnet_ros_cpp natnet_ros.launch`
 
-- ##### Understanding the launch file
+##### Understanding the launch file
 Launch file `natnet_ros.launch` contains the several configurable arguments. The details are mentioned in the launch file. Following are several important argument for the connection and the data transfer. Other connection arguments are for the advanced option.
 
 - `serverIP` : The IP address of the host PC. (The one selected in the Local Interface in Motive app)
 - `clientIP` : The IP address of the PC on which the file will be launched
 - `serverType` : Two possible options, `multicast` and `unicast`
 
-- ##### Publishing the single marker 
+##### Publishing the single marker 
 It is possible to track the single marker as a rigid body with constant orientation. Go to the `config/initiate.yaml` It is suggested to make a copy of the file and rename the new file.
 The file contains the details on what to modify. 
 
@@ -86,7 +87,7 @@ The question might arise on how to check the position of the single marker. For 
 
 After configuring the `initiate.yaml`, in the launch file, enable the `pub_individual_marker`. Change the name of the config file in the argument `conf_file` if needed and launch the file.
 
-- ##### Replacing existing package
+##### Replacing existing package
 You can easily replace the current package with this package. In the `natnet_ros.launch` change the name of node to the node you currently using. For an example, 
 If you are using the `vrpn_client_node`
 changes are following
@@ -96,5 +97,5 @@ changes are following
 ```
 
 ## Citation
-If you use this software, please cite it from [CITATION.cff](https://github.com/L2S-lab/natnet_ros_cpp/blob/noeitc/CITATION.cff)
+If you use this software, please consider citing it [from here](https://hal.science/hal-04150950)
 
